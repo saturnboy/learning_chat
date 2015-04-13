@@ -1,2 +1,3 @@
-# learning_chat
-playing around with PHP webapps
+# Learning Chat
+
+Playing around with a simple PHP webapp...

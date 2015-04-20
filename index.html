@@ -22,7 +22,7 @@
 </div><!-- /row -->
 
 <div class="row bottom-pad">
-<div class="col-xs-12"><textarea class="form-control" rows="9" readonly="readonly"></textarea></div>
+<div class="col-xs-12"><textarea id="log" class="form-control" rows="9" readonly="readonly">loading...</textarea></div>
 </div><!-- /row -->
 
 <div class="row">
@@ -37,43 +37,58 @@
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script>
 $(function() {
-  $('.btn').mouseup(function() { $(this).blur(); });
-  
+  $('.btn').mouseup(function() {
+    $(this).blur();
+  });
+
   $('#send-btn').click(function() {
     send_msg();
   });
-  
+
   $('#send-msg').keypress(function(evt) {
     if (evt.keyCode == 13) {
         send_msg();
     }
   });
-  
+
   chat_log();
 });
 
 function send_msg() {
-  var name = $('#send-name').val().trim();
-  var msg = $('#send-msg').val().trim();
-  
-  if (name.length > 0 && msg.length > 0) {
-    console.log('SEND: {"' + name + '":"' + msg + '"}');
-  }
+  var name = $('#send-name').val();
+  var msg = $('#send-msg').val();
+
+  //validate? name & msg
+
+  $.post('chat.php', { name:name, msg:msg }, function() {
+    //success, so clear msg
+    $('#send-msg').val('');
+  }).fail(function() {
+    alert('ERROR: failed to send...');
+  });
 }
 
 function chat_log() {
-  $('#now').text(now());
-  setTimeout(chat_log, 2345);
+  $.get('chat.php', function(data) {
+    var log = [];
+    $.each(data, function(i, datum) {
+      log.push(datum.name + ': ' + datum.msg);
+    });
+
+	$('#log').val(log.join('\n'));
+    $('#now').text(now());
+
+    //refresh log in 1.234s
+    setTimeout(chat_log, 1234);
+  }).fail(function() {
+    alert('ERROR: failed to get log...');
+  });
 }
 
 function now() {
   var d = new Date();
-  var Y = d.getFullYear();
-  var M = d.getMonth() + 1;
-  var D = d.getDate();
-  var h = d.getHours();
-  var m = d.getMinutes();
-  var s = d.getSeconds();
+  var Y = d.getFullYear(), M = d.getMonth() + 1, D = d.getDate();
+  var h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();
 
   return Y + '-' + (M<10 ? '0' : '') + M + '-' + (D<10 ? '0' : '') + D + ' '
     + h + ':' + (m<10 ? '0' : '') + m + ':' + (s<10 ? '0' : '') + s;

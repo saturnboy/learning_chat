@@ -77,6 +77,9 @@ function chat_log() {
 
 	$('#log').val(log.join('\n'));
     $('#now').text(now());
+    
+    //scroll to bottom of textarea
+    $('#log').stop().animate({ scrollTop: $('#log')[0].scrollHeight }, 500);
 
     //refresh log in 1.234s
     setTimeout(chat_log, 1234);

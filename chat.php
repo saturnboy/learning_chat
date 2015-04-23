@@ -7,7 +7,7 @@ if (flock($fp, LOCK_EX)) {  // acquire lock
         $msgs = array();
         
         //read log file
-        while($msg = fgets($fp)) {
+        while ($msg = trim(fgets($fp))) {
             $i = strpos($msg, '|');
             if ($i) {
                 $msgs[] = array( 'name' => substr($msg, 0, $i), 'msg' => substr($msg, $i+1) );
